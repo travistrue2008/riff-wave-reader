@@ -6,6 +6,8 @@ edition = "2018"
 
 [dependencies]
 riff-wave-reader = { path = "../" }
+atrac3p = { path = "../atrac3p" }
 
 anyhow = "1.0"
+byteorder = "1.3"
 structopt = "0.3"

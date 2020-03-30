@@ -3,8 +3,12 @@ use structopt::StructOpt;
 
 use std::fs::File;
 use std::io::BufReader;
+use std::io::Read;
 use std::path::PathBuf;
 
+use byteorder::{ByteOrder, LittleEndian};
+
+use atrac3p::Atrac3Plus;
 use riff_wave_reader::RiffWaveReader;
 
 fn main() -> Result<(), Error> {
@@ -26,7 +30,19 @@ fn main() -> Result<(), Error> {
             let mut reader = RiffWaveReader::new(reader)?;
 
             let data = reader.data()?.collect::<Vec<_>>();
-            println!("{}", data.len());
+
+            for x in 0..2048 {
+                let byte = data.get(x).unwrap();
+                println!("{:08b}", byte);
+            }
+        }
+        Command::Atrac { input } => {
+            let file = File::open(input)?;
+            let reader = BufReader::new(file);
+
+            let mut atrac = Atrac3Plus::new(reader)?;
+
+            atrac.test()?;
         }
     }
 
@@ -47,6 +63,10 @@ enum Command {
         input: PathBuf,
     },
     Raw {
+        #[structopt(parse(from_os_str))]
+        input: PathBuf,
+    },
+    Atrac {
         #[structopt(parse(from_os_str))]
         input: PathBuf,
     },
