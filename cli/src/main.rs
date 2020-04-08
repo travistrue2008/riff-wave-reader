@@ -40,9 +40,9 @@ fn main() -> Result<(), Error> {
             let file = File::open(input)?;
             let reader = BufReader::new(file);
 
-            let mut atrac = Atrac3Plus::new(reader)?;
+            let atrac = Atrac3Plus::new(reader)?;
 
-            atrac.test()?;
+            atrac.into_iter().for_each(drop);
         }
         Command::Play { input } => {
             let file = File::open(input)?;
