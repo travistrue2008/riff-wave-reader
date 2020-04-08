@@ -44,6 +44,19 @@ fn main() -> Result<(), Error> {
 
             atrac.test()?;
         }
+        Command::Play { input } => {
+            let file = File::open(input)?;
+            let reader = BufReader::new(file);
+
+            let atrac = Atrac3Plus::new(reader)?;
+
+            let device = rodio::default_output_device().unwrap();
+            let sink = rodio::Sink::new(&device);
+
+            sink.append(atrac);
+            sink.play();
+            sink.sleep_until_end();
+        }
     }
 
     Ok(())
@@ -67,6 +80,10 @@ enum Command {
         input: PathBuf,
     },
     Atrac {
+        #[structopt(parse(from_os_str))]
+        input: PathBuf,
+    },
+    Play {
         #[structopt(parse(from_os_str))]
         input: PathBuf,
     },
